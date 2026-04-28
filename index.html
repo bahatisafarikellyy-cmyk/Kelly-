@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>App Stylée</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            color: white;
+            margin: 0;
+        }
+
+        /* IMAGE DE FOND */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("photo.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: blur(3px);
+            z-index: -2;
+        }
+
+        /* COUCHE SOMBRE */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: -1;
+        }
+
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            border-radius: 10px;
+            border: none;
+        }
+
+        button {
+            background: #00ffcc;
+            cursor: pointer;
+        }
+
+        canvas {
+            margin-top: 20px;
+            background: black;
+            border: 2px solid #00ffcc;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Login</h2>
+
+<div id="login">
+    <input type="text" id="name" placeholder="Entre ton nom">
+    <br>
+    <button onclick="saveName()">Se connecter</button>
+</div>
+
+<div id="app" style="display:none;">
+    <h2 id="welcome"></h2>
+    <button onclick="drawName()">Dessiner ton nom</button>
+    <br>
+    <canvas id="canvas" width="300" height="150"></canvas>
+    <br>
+    <button onclick="logout()">Se déconnecter</button>
+</div>
+
+<script>
+    let savedName = localStorage.getItem("username");
+
+    if (savedName) {
+        showApp(savedName);
+    }
+
+    function saveName() {
+        let name = document.getElementById("name").value;
+        if (name === "") return alert("Entre ton nom !");
+        localStorage.setItem("username", name);
+        showApp(name);
+    }
+
+    function showApp(name) {
+        document.getElementById("login").style.display = "none";
+        document.getElementById("app").style.display = "block";
+        document.getElementById("welcome").innerText = "Bonjour " + name;
+    }
+
+    function logout() {
+        localStorage.removeItem("username");
+        location.reload();
+    }
+
+    function drawName() {
+        let canvas = document.getElementById("canvas");
+        let ctx = canvas.getContext("2d");
+
+        let x = 0;
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            let color = "hsl(" + (x * 5 % 360) + ", 100%, 50%)";
+
+            ctx.font = "30px Arial";
+            ctx.fillStyle = color;
+
+            ctx.fillText(localStorage.getItem("username"), x, 80);
+
+            x += 2;
+
+            if (x > canvas.width) {
+                x = -100;
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    }
+</script>
+
+</body>
+</html>
